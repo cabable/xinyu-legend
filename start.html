@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>勇者心雨传 · 开始</title>
+<link rel="icon" href="data:,">
+<style>
+  :root{
+    --ink:#070a11;
+    --gold:#f5c26b;
+    --gold-d:#b8822c;
+    --cyan:#7fe3ff;
+    --muted:#7b889c;
+    --mono:ui-monospace,"Cascadia Mono",Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0; background:var(--ink); color:#dbe4f2; overflow:hidden;
+    font-family:var(--mono);
+  }
+
+  /* ---------- 左：像素照片 ---------- */
+  .photo{
+    position:fixed; left:0; top:0; bottom:0; width:48vw; z-index:1;
+    background:url("start/portrait.png") center 30% / cover no-repeat;
+    image-rendering:pixelated;
+    filter:brightness(.68) saturate(.80) contrast(1.04);
+  }
+  .photo::after{
+    content:""; position:absolute; inset:0;
+    background:
+      linear-gradient(90deg, rgba(7,10,17,.26) 0%, rgba(7,10,17,0) 24%, rgba(7,10,17,.62) 72%, rgba(7,10,17,1) 100%),
+      linear-gradient(180deg, rgba(7,10,17,.55), transparent 26%, transparent 72%, rgba(7,10,17,.75));
+  }
+
+  /* ---------- 右：暗底 + 侧光 ---------- */
+  .right-bg{
+    position:fixed; inset:0; z-index:0;
+    background:
+      radial-gradient(ellipse 58% 88% at 48% 50%, rgba(245,194,107,.075), transparent 64%),
+      #070a11;
+  }
+
+  .scan{
+    position:fixed; inset:0; pointer-events:none; z-index:9;
+    background:repeating-linear-gradient(180deg, rgba(0,0,0,.30) 0 2px, transparent 2px 4px);
+    opacity:.55;
+  }
+  .bezel{
+    position:fixed; inset:10px; pointer-events:none; z-index:8;
+    border:2px solid rgba(184,130,44,.5);
+    box-shadow:inset 0 0 0 4px rgba(7,10,17,.85), inset 0 0 90px rgba(0,0,0,.7);
+  }
+  .bezel::before,.bezel::after{
+    content:""; position:absolute; width:16px; height:16px; border:2px solid var(--gold);
+  }
+  .bezel::before{left:-2px; top:-2px; border-right:0; border-bottom:0}
+  .bezel::after{right:-2px; bottom:-2px; border-left:0; border-top:0}
+
+  /* ---------- 右半区内容 ---------- */
+  .stage{
+    position:relative; z-index:3; height:100%;
+    margin-left:48vw; padding:0 clamp(24px,5vw,80px);
+    display:flex; flex-direction:column; align-items:flex-start; justify-content:center;
+    gap:14px;
+  }
+
+  .marquee{
+    display:flex; align-items:center; gap:10px;
+    font-size:11px; letter-spacing:.3em; color:var(--cyan); text-transform:uppercase;
+  }
+  .marquee .b{animation:blink 1.2s steps(1,end) infinite}
+  .marquee .s{color:#3d4a5f}
+
+  .title{
+    width:min(560px, 46vw); height:auto; display:block; image-rendering:pixelated;
+    filter:drop-shadow(0 0 26px rgba(245,194,107,.28));
+    animation:titleIn .5s steps(3,end) both;
+  }
+  .en-title{
+    font-size:11px; letter-spacing:.52em; color:#9fabc0;
+    text-transform:uppercase; padding-left:.2em; margin-top:-2px;
+  }
+
+  .divider{
+    display:flex; align-items:center; gap:10px; width:min(320px, 34vw); margin:6px 0 8px;
+  }
+  .divider::before,.divider::after{
+    content:""; flex:1; height:2px;
+    background:repeating-linear-gradient(90deg, var(--gold-d) 0 6px, transparent 6px 12px);
+  }
+  .divider span{
+    width:8px; height:8px; background:var(--gold); transform:rotate(45deg);
+    box-shadow:0 0 10px rgba(245,194,107,.6);
+  }
+
+  .start{
+    padding:16px 56px; border:2px solid var(--gold);
+    background:linear-gradient(180deg, rgba(245,194,107,.18), rgba(245,194,107,.05));
+    color:var(--gold); font-family:var(--mono); font-size:18px; letter-spacing:.28em;
+    cursor:pointer; text-transform:uppercase;
+    animation:startPulse 1.7s steps(2,end) infinite;
+  }
+  .start:hover{background:var(--gold); color:#1a1206; animation:none; box-shadow:0 0 28px rgba(245,194,107,.55)}
+  .start:active{transform:translateY(2px)}
+  .start:disabled{opacity:.45; cursor:default; animation:none}
+
+  .keys{
+    margin-top:6px;
+    display:flex; gap:16px; flex-wrap:wrap;
+    font-size:11px; letter-spacing:.16em; color:#9aa7bb; text-transform:uppercase;
+  }
+  .keys i{color:var(--cyan); font-style:normal}
+
+  .foot{
+    margin-top:10px;
+    font-size:10px; letter-spacing:.24em; color:#66788f;
+  }
+  .meta{
+    position:fixed; right:26px; bottom:22px; z-index:4;
+    font-size:10px; letter-spacing:.22em; color:#4a5a70; text-transform:uppercase;
+  }
+
+  @keyframes blink{0%,49%{opacity:1} 50%,100%{opacity:.12}}
+  @keyframes startPulse{0%,49%{box-shadow:0 0 0 rgba(245,194,107,0)} 50%,100%{box-shadow:0 0 26px rgba(245,194,107,.32)}}
+  @keyframes titleIn{from{opacity:0; transform:translateY(10px)} to{opacity:1; transform:none}}
+  #fade{position:fixed; inset:0; background:#000; opacity:0; pointer-events:none; z-index:20; transition:opacity .32s steps(4,end)}
+  #fade.on{opacity:1}
+
+  /* ---------- 竖屏：照片在上，文字在下居中 ---------- */
+  @media (max-width:820px){
+    .photo{width:100%; height:40vh; bottom:auto; background-position:center 22%}
+    .photo::after{
+      background:linear-gradient(180deg, rgba(7,10,17,.35), transparent 30%, rgba(7,10,17,.55) 78%, rgba(7,10,17,.98) 100%);
+    }
+    .stage{
+      margin-left:0; padding:calc(40vh + 10px) 22px 26px;
+      align-items:center; text-align:center; gap:10px;
+    }
+    .title{width:min(420px, 84vw)}
+    .en-title{padding-left:0}
+    .divider{width:min(280px,72vw); margin:2px 0 6px}
+    .start{font-size:14px; letter-spacing:.2em; padding:12px 30px}
+    .keys{justify-content:center; gap:12px; font-size:10px}
+    .foot{text-align:center}
+    .meta{right:0; left:0; text-align:center; bottom:16px}
+  }
+  @media (prefers-reduced-motion:reduce){*{animation-duration:.01ms !important}}
+</style>
+</head>
+<body>
+  <div class="right-bg"></div>
+  <div class="photo"></div>
+
+  <main class="stage">
+    <div class="marquee">
+      <span class="b">NOW LOADING</span>
+      <span class="s">/</span>
+      <span>PLAYER 1 READY</span>
+    </div>
+
+    <img class="title" src="start/title2_px.png" alt="勇者心雨传">
+    <div class="en-title">The Legend of Xin Yu</div>
+
+    <div class="divider"><span></span></div>
+
+    <button class="start" id="startBtn">开始游戏</button>
+  </main>
+
+  <div class="meta">© 2026 · Demo Build 11.08</div>
+  <div class="bezel"></div>
+  <div class="scan"></div>
+  <div id="fade"></div>
+
+<script>
+(function () {
+  'use strict';
+  const fade = document.getElementById('fade');
+  const btn = document.getElementById('startBtn');
+
+  function start() {
+    if (btn.disabled) return;
+    btn.disabled = true;
+    fade.classList.add('on');
+    // 手机上顺手进全屏 + 尝试锁定横屏（失败就忽略）
+    const isTouch = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
+    if (isTouch) {
+      try {
+        const el = document.documentElement;
+        if (el.requestFullscreen) el.requestFullscreen().catch(() => {});
+        if (screen.orientation && screen.orientation.lock) screen.orientation.lock('landscape').catch(() => {});
+      } catch (e) { /* 忽略 */ }
+    }
+    setTimeout(() => { location.href = 'index.html?go=1'; }, 340);
+  }
+  btn.addEventListener('click', start);
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); start(); }
+  });
+})();
+</script>
+</body>
+</html>

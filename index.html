@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>勇者心雨传</title>
+<link rel="icon" href="data:,">
+<script>
+/* 入口守卫：只有从开始界面（?go=1）进来才启动游戏；
+ * 直接打开本页或刷新时回到开始界面。带调试参数时不拦截，方便自动化测试。 */
+(function () {
+  var q = new URLSearchParams(location.search);
+  var isTest = q.has('debug') || q.has('step') || q.has('group') || q.has('press');
+  if (q.has('go')) {
+    if (!isTest) history.replaceState(null, '', location.pathname);  // 抹掉标记，刷新即回开始页
+  } else if (!isTest) {
+    location.replace('start.html');
+  }
+})();
+</script>
+<style>
+  html,body{height:100%}
+  body{
+    margin:0; background:#000; overflow:hidden;
+    touch-action:none; overscroll-behavior:none;
+    -webkit-user-select:none; user-select:none;
+    -webkit-tap-highlight-color:transparent;
+    height:100dvh;
+  }
+  /* 只有画面：16:9 居中，四周黑边 */
+  /* 整个游戏装在这个盒子里；竖屏时整盒旋转 90°，等于"点开就是横屏" */
+  #app{position:fixed; inset:0; overflow:hidden}
+  #stage{
+    position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+    background:#000;
+  }
+  #stage canvas{position:absolute; inset:0; width:100%; height:100%; display:block}
+  #bg{z-index:1}#fg{z-index:2}#ui{z-index:3}
+
+  /* ---------- 触屏操作 ---------- */
+  .tc-layer{position:absolute; inset:0; z-index:5; pointer-events:none; touch-action:none}
+  .tc-zone{position:absolute; left:0; bottom:0; width:50%; height:78%; pointer-events:auto}
+  .tc-stick{
+    position:absolute; left:calc(22px + env(safe-area-inset-left)); bottom:22px;
+    width:132px; height:132px; border-radius:50%;
+    border:2px solid rgba(245,194,107,.32); background:rgba(8,12,18,.32);
+    opacity:.5; transition:opacity .15s; pointer-events:none;
+  }
+  .tc-stick.on{opacity:.95}
+  .tc-stick i{
+    position:absolute; left:50%; top:50%; width:56px; height:56px; border-radius:50%;
+    transform:translate(-50%,-50%);
+    background:radial-gradient(circle at 40% 35%, #ffe0a3, #e0a94a);
+    box-shadow:0 0 18px rgba(245,194,107,.45);
+  }
+  .tc-btn{
+    position:absolute; pointer-events:auto; padding:0; cursor:pointer;
+    border:2px solid rgba(245,194,107,.55); background:rgba(8,12,18,.45);
+    color:#f5c26b; font-family:ui-monospace,"Microsoft YaHei",monospace;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .tc-btn:active{background:rgba(245,194,107,.85); color:#1a1206}
+  .tc-punch{
+    right:calc(26px + env(safe-area-inset-right)); bottom:26px;
+    width:98px; height:98px; border-radius:50%; font-size:26px; letter-spacing:.1em;
+    box-shadow:0 0 22px rgba(245,194,107,.25);
+  }
+  .tc-reset{
+    right:calc(42px + env(safe-area-inset-right)); bottom:142px;
+    width:66px; height:66px; border-radius:50%; font-size:13px;
+  }
+  @media (hover:hover) and (pointer:fine){ .tc-layer{display:none} }
+
+  /* 竖屏 + 触屏：把整块画面顺时针转 90°，横过来看就是正的 */
+  @media (orientation:portrait) and (pointer:coarse){
+    #app{
+      inset:auto; left:50%; top:50%;
+      width:100vh; height:100vw;
+      width:100dvh; height:100dvw;
+      transform:translate(-50%,-50%) rotate(90deg);
+      transform-origin:center center;
+    }
+  }
+</style>
+</head>
+<body>
+  <div id="app">
+    <div id="stage">
+      <canvas id="bg" width="640" height="360"></canvas>
+      <canvas id="fg" width="640" height="360"></canvas>
+      <canvas id="ui" width="640" height="360"></canvas>
+    </div>
+  </div>
+
+<script>
+/* 舞台尺寸：按 #app 的可用空间等比缩放（16:9 居中）
+ * 不用 vw/vh，因为竖屏时 #app 被旋转过，viewport 单位与它不对应 */
+(function () {
+  var app = document.getElementById('app');
+  var stage = document.getElementById('stage');
+  function fit() {
+    var W = app.clientWidth, H = app.clientHeight;
+    if (!W || !H) return;
+    var s = Math.min(W / 16, H / 9);
+    stage.style.width = Math.floor(s * 16) + 'px';
+    stage.style.height = Math.floor(s * 9) + 'px';
+  }
+  window.__fitStage = fit;
+  fit();
+  window.addEventListener('resize', fit);
+  window.addEventListener('orientationchange', function () { setTimeout(fit, 120); });
+})();
+</script>
+<script src="demo.js?v=16"></script>
+</body>
+</html>
